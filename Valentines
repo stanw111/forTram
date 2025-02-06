@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Valentine Game</title>
+    <style>
+        body {
+            background-color: pink;
+            overflow: hidden;
+        }
+        .heart {
+            position: absolute;
+            color: red;
+            font-size: 20px;
+            animation: float 6s linear infinite;
+        }
+        #question {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: red;
+        }
+        #buttons {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #yes {
+            background-color: lightgreen;
+        }
+        #no {
+            background-color: salmon;
+        }
+        .firework-heart {
+            position: absolute;
+            font-size: 24px;
+            color: red;
+            animation: explode 1s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        .heart-burst {
+            animation: heartScale 0.5s ease-out forwards;
+        }
+        @keyframes heartScale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="question">Will you be my Valentine? 💖</div>
+    <div id="buttons">
+        <button id="yes">YES</button>
+        <button id="no">NO</button>
+    </div>
+
+    <script>
+        let yesScale = 1;
+
+        // Create floating hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '♥';
+            heart.style.left = Math.random() * 100 + 'vw';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }
+        setInterval(createHeart, 300);
+
+        // Handle No button click
+        document.getElementById('no').addEventListener('click', function() {
+            // Grow the Yes button
+            yesScale += 0.3;
+            document.getElementById('yes').style.transform = `scale(${yesScale})`;
+
+            // Add shake animation to Yes button
+            const yesButton = document.getElementById('yes');
+            yesButton.style.animation = 'shake 0.5s ease-out';
+
+            // Remove shake animation after it ends
+            yesButton.addEventListener('animationend', function() {
+                yesButton.style.animation = '';
+            });
+        });
+
+        // Handle Yes button click
+        document.getElementById('yes').addEventListener('click', function() {
+            // Hide the No button
+            document.getElementById('no').style.display = 'none';
+           
+            // Add burst animation to Yes button
+            this.classList.add('heart-burst');
+           
+            // Create heart fireworks
+            const rect = this.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+           
+            for(let i = 0; i < 50; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework-heart';
+                firework.innerHTML = '♥';
+                firework.style.left = centerX + 'px';
+                firework.style.top = centerY + 'px';
+               
+                const angle = (Math.PI * 2 * i) / 50;
+                const distance = Math.random() * 150 + 50;
+                firework.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                firework.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+               
+                document.body.appendChild(firework);
+                setTimeout(() => firework.remove(), 1000);
+            }
+           
+            // Show message
+            setTimeout(() => {
+                alert('YAYYY FINALLY! What took you so long??? Thank you for being my Valentine Tram! I love you so much 💖');
+            }, 500);
+        });
+
+        // Reset burst animation
+        document.getElementById('yes').addEventListener('animationend', function() {
+            this.classList.remove('heart-burst');
+        });
+    </script>
+</body>
+</html>
